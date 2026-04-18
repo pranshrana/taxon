@@ -59,11 +59,11 @@ If the user passed `--force-download` as an argument, skip the comparison and do
 Read the current config. Then:
 
 - **Always** — update `last_checked` to today's date (ISO `YYYY-MM-DD`).
+- **Always** — HEAD-check the existing `ir10_form_url` with `curl -sI -L`. If it does NOT return HTTP 200, set `ir10_form_url` to `null` and flag in the report so the user can supply the new URL. Do NOT try to derive a replacement — IRD restructures the media path occasionally (e.g. `ir1/` → `ir1---ir99/`) and year-versioning has moved on and off the form itself, so any swap rule is brittle. The form URL is maintained manually.
 - **If a new IR10G was downloaded this run:**
   - Set `tax_year` to the year the new IR10G covers (e.g. `2026` for `IR10G-2026.pdf`).
-  - Set `ir10_guide_url` to the exact URL used for download.
-  - Derive `ir10_form_url` by replacing `ir10g/ir10g-<YYYY>.pdf` with `ir10/ir10-<YYYY>.pdf` in the URL path — the IR10 form sits at a parallel IRD path to IR10G. Verify with `curl -I -L` that the derived URL returns HTTP 200 before writing it. If the HEAD check fails, set `ir10_form_url` to `null` and note this in the report rather than fabricating a URL.
-  - Set `last_updated` to today's date.
+  - Set `ir10_guide_url` to the exact URL used for download (keep any `?modified=...` cache-buster IRD appends — it records the published revision).
+  - Set `last_updated` to the IRD `Last-Modified` response header date if available; otherwise today.
 - Leave `depreciation_tool_url` unchanged unless the user explicitly asks to update it.
 
 Write the updated config back (pretty-printed JSON, 2-space indent, trailing newline) using `Write`.
@@ -78,6 +78,7 @@ IRD current:   IR10G-YYYY.pdf  (<url>, last updated <date>)
 Status:        up-to-date | outdated | ambiguous
 Action taken:  none | downloaded guides/<file> | awaiting user decision
 Config updated: yes (tax_year <old> → <new>) | no (last_checked bumped only) | failed — <reason>
+Form URL:       ok | missing (HEAD 404 — needs manual update)
 Templates:     <any Excel/worksheet URLs found, or "none">
 Notes:         <anything noteworthy — format changes, new fields mentioned in changelog, form URL HEAD check failures, etc.>
 ```
