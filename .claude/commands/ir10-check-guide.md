@@ -52,6 +52,22 @@ If the user passed `--force-download` as an argument, skip the comparison and do
 - **Do not delete the old file.** Keep prior versions in `guides/` as an audit trail — the portfolio story benefits from showing version history.
 - After download, `Read` the first page of the new PDF to sanity-check it's actually the IR10 guide and not an error page or redirect HTML.
 
+### 4b. Update `guides/ir10_config.json`
+
+`guides/ir10_config.json` is the single source of truth for year-specific state consumed by `scripts/build_ir10.py` (the generator used by `tax-form-expert`). Keep it in sync on every run.
+
+Read the current config. Then:
+
+- **Always** — update `last_checked` to today's date (ISO `YYYY-MM-DD`).
+- **If a new IR10G was downloaded this run:**
+  - Set `tax_year` to the year the new IR10G covers (e.g. `2026` for `IR10G-2026.pdf`).
+  - Set `ir10_guide_url` to the exact URL used for download.
+  - Derive `ir10_form_url` by replacing `ir10g/ir10g-<YYYY>.pdf` with `ir10/ir10-<YYYY>.pdf` in the URL path — the IR10 form sits at a parallel IRD path to IR10G. Verify with `curl -I -L` that the derived URL returns HTTP 200 before writing it. If the HEAD check fails, set `ir10_form_url` to `null` and note this in the report rather than fabricating a URL.
+  - Set `last_updated` to today's date.
+- Leave `depreciation_tool_url` unchanged unless the user explicitly asks to update it.
+
+Write the updated config back (pretty-printed JSON, 2-space indent, trailing newline) using `Write`.
+
 ### 5. Report
 
 Output a short structured summary:
@@ -61,8 +77,9 @@ Local guide:   IR10G-YYYY.pdf  (covers year ending 31 March YYYY, published <dat
 IRD current:   IR10G-YYYY.pdf  (<url>, last updated <date>)
 Status:        up-to-date | outdated | ambiguous
 Action taken:  none | downloaded guides/<file> | awaiting user decision
+Config updated: yes (tax_year <old> → <new>) | no (last_checked bumped only) | failed — <reason>
 Templates:     <any Excel/worksheet URLs found, or "none">
-Notes:         <anything noteworthy — format changes, new fields mentioned in changelog, etc.>
+Notes:         <anything noteworthy — format changes, new fields mentioned in changelog, form URL HEAD check failures, etc.>
 ```
 
 ## Guardrails
