@@ -1,8 +1,8 @@
 {
-  "tax_year": 2025,
-  "ir10_form_url": "https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir1/ir10/ir10-2025.pdf",
-  "ir10_guide_url": "https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir1/ir10g/ir10g-2025.pdf",
+  "tax_year": 2026,
+  "ir10_form_url": "https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir1---ir99/ir10/ir10.pdf",
+  "ir10_guide_url": "https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir1---ir99/ir10g/ir10g-2026.pdf?modified=20260316231216",
   "depreciation_tool_url": "https://myir.ird.govt.nz/tools/_/",
   "last_checked": "2026-04-18",
-  "last_updated": "2025-04-01"
+  "last_updated": "2026-03-16"
 }
